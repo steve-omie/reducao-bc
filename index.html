@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Redução de Base de Cálculo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Estilo para inputs number, removendo as setas */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl mx-4">
+
+        <!-- Cabeçalho -->
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">Calculadora de Redução da Base de Cálculo</h1>
+            <p class="text-gray-600 mt-2">Simule como a redução da base de cálculo afeta a carga tributária final.</p>
+            <p class="text-sm text-gray-500 mt-1">Os cálculos servem somente para fins didáticos e não possuem qualquer
+                validade jurídica, os mesmos precisam ser validados com contadores!</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Coluna de Entradas -->
+            <div class="space-y-6">
+                <h2 class="text-lg font-semibold text-gray-700 border-b pb-2">Parâmetros da Operação</h2>
+
+                <div>
+                    <p class="block text-sm font-medium text-gray-700">Valor da Operação</p>
+                    <p class="mt-1 block w-full px-4 py-2 text-lg font-semibold text-gray-800 bg-gray-50 rounded-md">R$
+                        1.000,00</p>
+                </div>
+
+                <div class="relative group">
+                    <label for="aliquotaOriginal"
+                        class="flex items-center gap-1 text-sm font-medium text-gray-700 cursor-help">
+                        <span>Alíquota Original (%)</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </label>
+                    <input type="number" id="aliquotaOriginal" value="18"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <div
+                        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-max max-w-xs p-3 text-xs text-white bg-gray-900 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+                        Ex: "... a alíquota do imposto é de 18% (dezoito por cento)..."
+                        <svg class="absolute text-gray-900 h-2 w-full left-0 top-full" x="0px" y="0px"
+                            viewBox="0 0 255 255" xml:space="preserve">
+                            <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="relative group">
+                    <label for="cargaFinalDesejada"
+                        class="flex items-center gap-1 text-sm font-medium text-gray-700 cursor-help">
+                        <span>Carga Tributária Final Desejada (%)</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </label>
+                    <input type="number" id="cargaFinalDesejada"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <div
+                        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-max max-w-xs p-3 text-xs text-white bg-gray-900 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+                        Ex: "... de forma que a carga tributária final resulte no percentual de 7% (sete por cento)..."
+                        <svg class="absolute text-gray-900 h-2 w-full left-0 top-full" x="0px" y="0px"
+                            viewBox="0 0 255 255" xml:space="preserve">
+                            <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="relative group">
+                    <label for="percentualReducao"
+                        class="flex items-center gap-1 text-sm font-medium text-gray-700 cursor-help">
+                        <span>Percentual de Redução da Base (%)</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </label>
+                    <input type="number" id="percentualReducao"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <div
+                        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-max max-w-xs p-3 text-xs text-white bg-gray-900 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+                        Ex: "... a base de cálculo do imposto fica reduzida em 41,6667%..."
+                        <svg class="absolute text-gray-900 h-2 w-full left-0 top-full" x="0px" y="0px"
+                            viewBox="0 0 255 255" xml:space="preserve">
+                            <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="relative group">
+                    <label for="percentualBaseAplicada"
+                        class="flex items-center gap-1 text-sm font-medium text-gray-700 cursor-help">
+                        <span>Percentual da Base Aplicada (%)</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </label>
+                    <input type="number" id="percentualBaseAplicada"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <div
+                        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-max max-w-xs p-3 text-xs text-white bg-gray-900 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
+                        Ex: "... a base de cálculo corresponderá a 58,3333% do valor da operação..."
+                        <svg class="absolute text-gray-900 h-2 w-full left-0 top-full" x="0px" y="0px"
+                            viewBox="0 0 255 255" xml:space="preserve">
+                            <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
+                        </svg>
+                    </div>
+                </div>
+
+                <button id="fillExample"
+                    class="w-full text-indigo-600 border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 font-medium py-2 px-4 rounded-lg transition-colors duration-200">
+                    Preencher com Exemplo
+                </button>
+            </div>
+
+            <!-- Coluna de Resultados -->
+            <div class="bg-gray-50 p-6 rounded-lg space-y-5">
+                <h2 class="text-lg font-semibold text-gray-700 border-b pb-2">Resultados Calculados</h2>
+
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Base de Cálculo Reduzida</p>
+                    <p id="baseReduzida" class="text-2xl font-semibold text-indigo-600">R$ 0,00</p>
+                </div>
+
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Valor do Imposto</p>
+                    <p id="valorImposto" class="text-2xl font-semibold text-indigo-600">R$ 0,00</p>
+                </div>
+
+                <div class="pt-2 border-t">
+                    <p class="text-sm font-medium text-gray-500">Carga Tributária Efetiva</p>
+                    <p id="cargaEfetiva" class="text-3xl font-bold text-green-600">0,0000%</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Seleciona os elementos do DOM
+        const aliquotaOriginalInput = document.getElementById('aliquotaOriginal');
+        const cargaFinalDesejadaInput = document.getElementById('cargaFinalDesejada');
+        const percentualReducaoInput = document.getElementById('percentualReducao');
+        const percentualBaseAplicadaInput = document.getElementById('percentualBaseAplicada');
+        const fillExampleButton = document.getElementById('fillExample');
+
+        const baseReduzidaOutput = document.getElementById('baseReduzida');
+        const valorImpostoOutput = document.getElementById('valorImposto');
+        const cargaEfetivaOutput = document.getElementById('cargaEfetiva');
+
+        let isUpdating = false; // Flag para evitar loops infinitos nos cálculos
+
+        // Função para formatar valores como moeda (Real Brasileiro)
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
+        }
+
+        // Função para forçar a máscara de 4 casas decimais durante a digitação
+        function enforceDecimalMask(event) {
+            const input = event.target;
+            // Permite apenas números e um ponto/vírgula decimal
+            let value = input.value.replace(/[^0-9.,]/g, '').replace(',', '.');
+
+            const decimalIndex = value.indexOf('.');
+
+            if (decimalIndex !== -1) {
+                const decimals = value.substring(decimalIndex + 1);
+                if (decimals.length > 4) {
+                    // Trunca o valor se exceder 4 casas decimais
+                    value = value.substring(0, decimalIndex + 5);
+                }
+            }
+            // Atualiza o valor do input somente se ele foi modificado
+            if (input.value !== value) {
+                input.value = value;
+            }
+        }
+
+        // Função unificada que atualiza todos os campos com base no campo que foi alterado
+        function updateAll(source) {
+            if (isUpdating) return;
+            isUpdating = true;
+
+            const valorBase = 1000; // Valor fixo
+            const aliquotaOriginal = parseFloat(aliquotaOriginalInput.value) || 0;
+            let percentualReducao = parseFloat(percentualReducaoInput.value) || 0;
+            let percentualBaseAplicada = parseFloat(percentualBaseAplicadaInput.value) || 0;
+            let cargaFinalDesejada = parseFloat(cargaFinalDesejadaInput.value) || 0;
+
+            // Lógica de cálculo baseada em qual campo iniciou a atualização
+            if (source === 'reduction') {
+                percentualBaseAplicada = 100 - percentualReducao;
+                if (aliquotaOriginal > 0) {
+                    cargaFinalDesejada = aliquotaOriginal * (percentualBaseAplicada / 100);
+                }
+            } else if (source === 'baseAplicada') {
+                percentualReducao = 100 - percentualBaseAplicada;
+                if (aliquotaOriginal > 0) {
+                    cargaFinalDesejada = aliquotaOriginal * (percentualBaseAplicada / 100);
+                }
+            } else if (source === 'finalRate') {
+                if (aliquotaOriginal > 0) {
+                    percentualBaseAplicada = (cargaFinalDesejada / aliquotaOriginal) * 100;
+                    percentualReducao = 100 - percentualBaseAplicada;
+                }
+            }
+
+            // Atualiza os valores dos outros campos de entrada para manter a consistência
+            if (source !== 'reduction') percentualReducaoInput.value = percentualReducao.toFixed(4);
+            if (source !== 'baseAplicada') percentualBaseAplicadaInput.value = percentualBaseAplicada.toFixed(4);
+            if (source !== 'finalRate') cargaFinalDesejadaInput.value = cargaFinalDesejada.toFixed(4);
+
+            // Calcula e exibe os resultados finais
+            const baseReduzida = valorBase * (percentualBaseAplicada / 100);
+            const valorImposto = baseReduzida * (aliquotaOriginal / 100);
+            const cargaEfetiva = valorBase > 0 ? (valorImposto / valorBase) * 100 : 0;
+
+            baseReduzidaOutput.textContent = formatCurrency(baseReduzida);
+            valorImpostoOutput.textContent = formatCurrency(valorImposto);
+            cargaEfetivaOutput.textContent = cargaEfetiva.toFixed(4).replace('.', ',') + '%';
+
+            isUpdating = false; // Libera a trava
+        }
+
+        function fillExample() {
+            aliquotaOriginalInput.value = 18;
+            percentualReducaoInput.value = 41.6667;
+            updateAll('reduction');
+        }
+
+        // Agrupa os listeners para cada input
+        function setupInputListeners(input, source) {
+            input.addEventListener('input', enforceDecimalMask);
+            input.addEventListener('input', () => updateAll(source));
+        }
+
+        // Adiciona "escutadores" de eventos para recalcular e aplicar máscara
+        setupInputListeners(aliquotaOriginalInput, 'reduction');
+        setupInputListeners(percentualReducaoInput, 'reduction');
+        setupInputListeners(percentualBaseAplicadaInput, 'baseAplicada');
+        setupInputListeners(cargaFinalDesejadaInput, 'finalRate');
+        fillExampleButton.addEventListener('click', fillExample);
+
+        // Executa o cálculo uma vez quando a página carrega
+        document.addEventListener('DOMContentLoaded', () => {
+            fillExample();
+        });
+    </script>
+</body>
+
+</html>
