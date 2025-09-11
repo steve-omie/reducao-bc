@@ -29,5 +29,5 @@ Os valores são formatados para **moeda brasileira** e **percentuais com até 4 
 
 ---
 
-> **Observação:**  
-> Os cálculos são apenas didáticos e não têm validade jurídica.
+**Observação:**  
+:warning: Os cálculos são apenas didáticos e não têm validade jurídica.
