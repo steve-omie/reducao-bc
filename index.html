@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Redução de Base de Cálculo</title>
+    <title>Calculadora de Redução de Base de Cálculo e Análise Tributária</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,6 +12,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
         }
 
         /* Estilo para inputs number, removendo as setas */
@@ -24,146 +25,269 @@
         input[type=number] {
             -moz-appearance: textfield;
         }
+
+        .explanation-card p {
+            margin-bottom: 1rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .explanation-card h3 {
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .explanation-card h3 svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #4f46e5;
+        }
+        
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #334155;
+            cursor: help;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            margin-top: 0.25rem;
+        }
+        
+        .input-wrapper input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+        
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            background-color: #ffffff;
+        }
+        
+        .tooltip {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 100%;
+            margin-bottom: 0.5rem;
+            width: max-content;
+            max-width: 20rem;
+            padding: 0.75rem;
+            font-size: 0.75rem;
+            color: #ffffff;
+            background-color: #1e293b;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+        
+        .group:hover .tooltip {
+            opacity: 1;
+        }
+        
+        .tooltip-arrow {
+            position: absolute;
+            color: #1e293b;
+            height: 0.5rem;
+            width: 100%;
+            left: 0;
+            top: 100%;
+        }
     </style>
 </head>
 
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-2xl mx-4">
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto space-y-8">
 
-        <!-- Cabeçalho -->
-        <div class="text-center mb-8">
-            <h1 class="text-2xl font-bold text-gray-800">Calculadora de Redução da Base de Cálculo</h1>
-            <p class="text-gray-600 mt-2">Simule como a redução da base de cálculo afeta a carga tributária final.</p>
-            <p class="text-sm text-gray-500 mt-1">Os cálculos servem somente para fins didáticos e não possuem qualquer
-                validade jurídica, os mesmos precisam ser validados com contadores!</p>
-        </div>
+        <!-- Cabeçalho Principal -->
+        <header class="bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-2xl p-8 text-white shadow-xl text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight">Simulador de Redução de Base de Cálculo</h1>
+                <p class="mt-2 text-indigo-100 max-w-2xl text-lg">Calcule e entenda os diferentes cenários e terminologias fiscais utilizados nas legislações estaduais para a redução da base de cálculo do ICMS.</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-sm border border-white/20 p-4 rounded-xl text-md max-w-xs text-indigo-50 shadow-inner">
+                <p>⚠️ <strong>Aviso:</strong> Os cálculos servem somente para fins didáticos e não possuem validade jurídica. Consulte seu contador para aplicações reais.</p>
+            </div>
+        </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Coluna de Entradas -->
-            <div class="space-y-6">
-                <h2 class="text-lg font-semibold text-gray-700 border-b pb-2">Parâmetros da Operação</h2>
-
-                <div>
-                    <p class="block text-sm font-medium text-gray-700">Valor da Operação</p>
-                    <p class="mt-1 block w-full px-4 py-2 text-lg font-semibold text-gray-800 bg-gray-50 rounded-md">R$
-                        1.000,00</p>
-                </div>
-
-                <div class="relative group">
-                    <label for="aliquotaOriginal"
-                        class="flex items-center gap-1 text-sm font-medium text-gray-700 cursor-help">
-                        <span>Alíquota Original (%)</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Coluna da Calculadora (Esquerda) -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                         </svg>
-                    </label>
-                    <input type="number" id="aliquotaOriginal" value="18"
-                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    <div
-                        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-max max-w-xs p-3 text-xs text-white bg-gray-900 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-                        Ex: "... a alíquota do imposto é de 18% (dezoito por cento)..."
-                        <svg class="absolute text-gray-900 h-2 w-full left-0 top-full" x="0px" y="0px"
-                            viewBox="0 0 255 255" xml:space="preserve">
-                            <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
-                        </svg>
+                        Parâmetros da Operação
+                    </h2>
+
+                    <div class="space-y-5">
+                        <!-- Valor Fixo -->
+                        <div>
+                            <p class="block text-sm font-medium text-slate-500">Valor da Operação (Fixo para Simulação)</p>
+                            <p class="mt-1 block w-full px-4 py-2 text-lg font-semibold text-slate-800 bg-slate-50 rounded-md border border-slate-100">R$ 1.000,00</p>
+                        </div>
+
+                        <!-- Alíquota Original -->
+                        <div class="group relative input-group">
+                            <label for="aliquotaOriginal">
+                                <span>Alíquota Original (%)</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="aliquotaOriginal" value="18" placeholder="0.0000">
+                            </div>
+                            <div class="tooltip">
+                                Ex: "... a alíquota do imposto é de 18% (dezoito por cento)..."
+                                <svg class="tooltip-arrow" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg>
+                            </div>
+                        </div>
+
+                        <!-- Carga Desejada -->
+                        <div class="group relative input-group">
+                            <label for="cargaFinalDesejada">
+                                <span>Carga Tributária Final Desejada (%)</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="cargaFinalDesejada" placeholder="0.0000">
+                            </div>
+                            <div class="tooltip">
+                                Ex: "... de forma que a carga tributária final resulte no percentual de 7% (sete por cento)..."
+                                <svg class="tooltip-arrow" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg>
+                            </div>
+                        </div>
+
+                        <!-- Percentual Redução -->
+                        <div class="group relative input-group">
+                            <label for="percentualReducao">
+                                <span>Percentual de Redução da Base (%)</span>
+                                <span class="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-1.5 py-0.5 rounded ml-1">NF-e</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="percentualReducao" placeholder="0.0000">
+                            </div>
+                            <div class="tooltip">
+                                Ex: "... a base de cálculo do imposto fica reduzida em 41,6667%..." - Este é o percentual de redução exigido no XML da NF-e (pRedBC).
+                                <svg class="tooltip-arrow" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg>
+                            </div>
+                        </div>
+
+                        <!-- Percentual Base Aplicada -->
+                        <div class="group relative input-group">
+                            <label for="percentualBaseAplicada">
+                                <span>Percentual da Base Aplicada (%)</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="percentualBaseAplicada" placeholder="0.0000">
+                            </div>
+                            <div class="tooltip">
+                                Ex: "... a base de cálculo corresponderá a 58,3333% do valor da operação..."
+                                <svg class="tooltip-arrow" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg>
+                            </div>
+                        </div>
+
+                        <button id="fillExample" class="mt-4 w-full text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200 flex justify-center items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                            Restaurar Exemplo
+                        </button>
                     </div>
                 </div>
 
-                <div class="relative group">
-                    <label for="cargaFinalDesejada"
-                        class="flex items-center gap-1 text-sm font-medium text-gray-700 cursor-help">
-                        <span>Carga Tributária Final Desejada (%)</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </label>
-                    <input type="number" id="cargaFinalDesejada"
-                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    <div
-                        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-max max-w-xs p-3 text-xs text-white bg-gray-900 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-                        Ex: "... de forma que a carga tributária final resulte no percentual de 7% (sete por cento)..."
-                        <svg class="absolute text-gray-900 h-2 w-full left-0 top-full" x="0px" y="0px"
-                            viewBox="0 0 255 255" xml:space="preserve">
-                            <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
-                        </svg>
+                <!-- Card de Resultados -->
+                <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-2xl shadow-sm border border-slate-200 space-y-5">
+                    <h2 class="text-lg font-bold text-slate-800 border-b border-slate-200 pb-3">Resultados Projetados</h2>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">Base Reduzida (vBC)</p>
+                            <p id="baseReduzida" class="text-xl font-semibold text-indigo-700">R$ 0,00</p>
+                        </div>
+
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">Valor Imposto (vICMS)</p>
+                            <p id="valorImposto" class="text-xl font-semibold text-indigo-700">R$ 0,00</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-200">
+                        <p class="text-sm font-medium text-slate-500">Carga Tributária Efetiva Real</p>
+                        <p id="cargaEfetiva" class="text-3xl font-black text-emerald-600">0,0000%</p>
                     </div>
                 </div>
-
-                <div class="relative group">
-                    <label for="percentualReducao"
-                        class="flex items-center gap-1 text-sm font-medium text-gray-700 cursor-help">
-                        <span>Percentual de Redução da Base (%) <small>*nfe</small></span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </label>
-                    <input type="number" id="percentualReducao"
-                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    <div
-                        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-max max-w-xs p-3 text-xs text-white bg-gray-900 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-                        Ex: "... a base de cálculo do imposto fica reduzida em 41,6667%..." - Este é o percentual de redução que constará no XML da NF-e
-                        <svg class="absolute text-gray-900 h-2 w-full left-0 top-full" x="0px" y="0px"
-                            viewBox="0 0 255 255" xml:space="preserve">
-                            <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
-                        </svg>
-                    </div>
-                </div>
-
-                <div class="relative group">
-                    <label for="percentualBaseAplicada"
-                        class="flex items-center gap-1 text-sm font-medium text-gray-700 cursor-help">
-                        <span>Percentual da Base Aplicada (%)</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </label>
-                    <input type="number" id="percentualBaseAplicada"
-                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                    <div
-                        class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-max max-w-xs p-3 text-xs text-white bg-gray-900 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10">
-                        Ex: "... a base de cálculo corresponderá a 58,3333% do valor da operação..."
-                        <svg class="absolute text-gray-900 h-2 w-full left-0 top-full" x="0px" y="0px"
-                            viewBox="0 0 255 255" xml:space="preserve">
-                            <polygon class="fill-current" points="0,0 127.5,127.5 255,0" />
-                        </svg>
-                    </div>
-                </div>
-
-                <button id="fillExample"
-                    class="w-full text-indigo-600 border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 font-medium py-2 px-4 rounded-lg transition-colors duration-200">
-                    Preencher com Exemplo
-                </button>
             </div>
 
-            <!-- Coluna de Resultados -->
-            <div class="bg-gray-50 p-6 rounded-lg space-y-5">
-                <h2 class="text-lg font-semibold text-gray-700 border-b pb-2">Resultados Calculados</h2>
+            <!-- Coluna de Explicações (Direita) -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 explanation-card h-full">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Entendendo os Conceitos Fiscais</h2>
+                    
+                    <p class="text-lg">A legislação tributária brasileira, especialmente a do ICMS nos diversos estados, utiliza diferentes formas de conceder e descrever o benefício da redução da base de cálculo. Entender e diferenciar esses termos é crucial para a parametrização correta em sistemas ERP e para evitar rejeições na emissão de notas fiscais.</p>
 
-                <div>
-                    <p class="text-sm font-medium text-gray-500">Base de Cálculo Reduzida</p>
-                    <p id="baseReduzida" class="text-2xl font-semibold text-indigo-600">R$ 0,00</p>
-                </div>
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>
+                        Percentual de Redução da Base
+                    </h3>
+                    <p>Refere-se ao valor que será <strong>retirado (descontado)</strong> da base de cálculo original. Quando o regulamento do estado diz "a base fica reduzida em 41,66%", este é o percentual de benefício direto concedido. A incidência do imposto ocorrerá apenas sobre o saldo restante.</p>
 
-                <div>
-                    <p class="text-sm font-medium text-gray-500">Valor do Imposto</p>
-                    <p id="valorImposto" class="text-2xl font-semibold text-indigo-600">R$ 0,00</p>
-                </div>
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                        Percentual da Base Aplicada
+                    </h3>
+                    <p>É o inverso do percentual de redução. Representa a fatia do valor da operação que efetivamente <strong>sofrerá a tributação</strong>. Por exemplo, se uma base foi reduzida em 40%, significa que a base aplicada é de 60%. Algumas legislações optam por descrever o benefício desta forma: "a base de cálculo corresponderá a 60% do valor da operação".</p>
 
-                <div class="pt-2 border-t">
-                    <p class="text-sm font-medium text-gray-500">Carga Tributária Efetiva</p>
-                    <p id="cargaEfetiva" class="text-3xl font-bold text-green-600">0,0000%</p>
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
+                        Carga Tributária Efetiva
+                    </h3>
+                    <p>Representa o "peso" real do imposto sobre o valor total do produto, misturando o efeito da alíquota com o da redução. Diversas normas definem o benefício pelo resultado final esperado, expressando: "redução da base de forma que a <strong>carga tributária resulte em 7%</strong>". Neste cenário, o sistema tributário exige que você encontre matematicamente qual é o percentual de redução que, aplicado à alíquota original, gera essa carga de 7%.</p>
+
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        O que é esperado na NF-e?
+                    </h3>
+                    <div class="bg-indigo-50 p-5 rounded-xl border border-indigo-100 text-indigo-900 shadow-inner mt-4">
+                        <p class="!mb-4 !text-indigo-900">
+                            Independentemente de como a lei estadual foi escrita (seja citando a redução, a base aplicada ou a carga tributária alvo), <strong>o padrão nacional estrutural do XML da NF-e exige explicitamente a informação do "Percentual de Redução"</strong>.
+                        </p>
+                        <ul class="list-disc ml-5 space-y-2 text-indigo-800 text-sm font-medium">
+                            <li>O percentual de redução deve ser informado na tag <code>&lt;pRedBC&gt;</code> do grupo de tributação.</li>
+                            <li>O valor financeiro da base já reduzida (Base Aplicada) vai na tag <code>&lt;vBC&gt;</code>.</li>
+                            <li>A Alíquota Original vai na tag <code>&lt;pICMS&gt;</code>.</li>
+                        </ul>
+                        <p class="!mt-4 !mb-0 text-sm text-indigo-700 bg-white/60 p-3 rounded-lg border border-indigo-100">
+                            <strong>Dica Prática:</strong> Se a sua legislação determina uma "carga de 7%" e a alíquota é 18%, seu ERP não enviará "7%" no XML. Ele precisa ser parametrizado para calcular e enviar o percentual de redução exato (aprox. 61,11%) para evitar que a nota caia em rejeições de Regra de Validação de Cálculo do Fisco (Rejeição 528 ou 530).
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 
     <script>
@@ -237,6 +361,12 @@
                     percentualReducao = 100 - percentualBaseAplicada;
                 }
             }
+
+            // Garante limites visuais lógicos (0 a 100)
+            if(percentualReducao < 0) percentualReducao = 0;
+            if(percentualReducao > 100) percentualReducao = 100;
+            if(percentualBaseAplicada < 0) percentualBaseAplicada = 0;
+            if(percentualBaseAplicada > 100) percentualBaseAplicada = 100;
 
             // Atualiza os valores dos outros campos de entrada para manter a consistência
             if (source !== 'reduction') percentualReducaoInput.value = percentualReducao.toFixed(4);
