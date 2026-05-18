@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Formação de Preço (Produto + Lucro + ICMS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        /* Estilo para inputs number, removendo as setas */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .explanation-card p {
+            margin-bottom: 1rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .explanation-card h3 {
+            margin-top: 1.75rem;
+            margin-bottom: 0.75rem;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .explanation-card h3 svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            color: #059669;
+        }
+        
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #334155;
+            cursor: help;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            margin-top: 0.25rem;
+        }
+        
+        .input-wrapper input {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 1rem;
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.375rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+        
+        .input-wrapper input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            background-color: #ffffff;
+        }
+        
+        .tooltip {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 100%;
+            margin-bottom: 0.5rem;
+            width: max-content;
+            max-width: 20rem;
+            padding: 0.75rem;
+            font-size: 0.75rem;
+            color: #ffffff;
+            background-color: #1e293b;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+        
+        .group:hover .tooltip {
+            opacity: 1;
+        }
+        
+        .tooltip-arrow {
+            position: absolute;
+            color: #1e293b;
+            height: 0.5rem;
+            width: 100%;
+            left: 0;
+            top: 100%;
+        }
+    </style>
+</head>
+
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto space-y-8">
+
+        <!-- Cabeçalho Principal -->
+        <header class="bg-gradient-to-r from-emerald-600 to-emerald-800 rounded-2xl p-8 text-white shadow-xl text-center md:text-left flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight">Formação de Preço (Markup + ICMS)</h1>
+                <p class="mt-2 text-emerald-100 max-w-2xl text-lg">Calcule o preço de venda final do seu produto aplicando seu lucro desejado e calculando o ICMS "por dentro".</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Coluna da Calculadora (Esquerda) -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Dados do Produto
+                    </h2>
+
+                    <div class="space-y-5">
+                        <!-- Custo do Produto -->
+                        <div class="group relative input-group">
+                            <label for="valorCusto">
+                                <span>Valor do Produto sem ICMS (R$)</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="valorCusto" value="100" placeholder="0.00">
+                            </div>
+                            <div class="tooltip">
+                                Preço de aquisição ou custo de produção livre do imposto estadual.
+                                <svg class="tooltip-arrow" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg>
+                            </div>
+                        </div>
+
+                        <!-- Lucro Desejado -->
+                        <div class="group relative input-group">
+                            <label for="margemLucro">
+                                <span>Lucro Desejado / Markup (%)</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="margemLucro" value="20" placeholder="0.0000">
+                            </div>
+                            <div class="tooltip">
+                                Percentual de lucro que deseja adicionar sobre o custo do produto.
+                                <svg class="tooltip-arrow" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg>
+                            </div>
+                        </div>
+
+                        <!-- Alíquota ICMS -->
+                        <div class="group relative input-group">
+                            <label for="aliquotaIcms">
+                                <span>Alíquota do ICMS (%)</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </label>
+                            <div class="input-wrapper">
+                                <input type="number" id="aliquotaIcms" value="18" placeholder="0.0000">
+                            </div>
+                            <div class="tooltip">
+                                Alíquota do imposto que será inserido na formação do preço.
+                                <svg class="tooltip-arrow" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card de Resultados -->
+                <div class="bg-gradient-to-br from-slate-50 to-slate-100 p-6 rounded-2xl shadow-sm border border-slate-200 space-y-5">
+                    <h2 class="text-lg font-bold text-slate-800 border-b border-slate-200 pb-3">Formação do Preço</h2>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">Valor Base (Produto + Lucro)</p>
+                            <p id="valorBaseLucro" class="text-xl font-semibold text-emerald-700">R$ 0,00</p>
+                        </div>
+
+                        <div>
+                            <p class="text-sm font-medium text-slate-500">Valor do ICMS Embutido</p>
+                            <p id="valorIcmsCalculado" class="text-xl font-semibold text-emerald-700">R$ 0,00</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-200">
+                        <p class="text-sm font-medium text-slate-500">Preço de Venda Final</p>
+                        <p id="precoFinalVenda" class="text-3xl font-black text-slate-800">R$ 0,00</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna de Explicações (Direita) -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 explanation-card h-full">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Entendendo a Composição</h2>
+                    
+                    <p class="text-lg">No Brasil, impostos como o ICMS são calculados através de um mecanismo chamado de <strong>cálculo por dentro</strong> (ou <em>gross up</em>). Isso significa que o próprio imposto faz parte da sua própria base de cálculo no preço final.</p>
+
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+                        1º Passo: O Produto e o Lucro
+                    </h3>
+                    <p>Primeiro, pegamos o valor inicial (sem ICMS) e adicionamos a margem de lucro (markup) desejada. Se o seu produto custa R$ 100,00 e você deseja um lucro de 20%, seu <strong>Valor Base</strong> será de R$ 120,00.</p>
+
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                        2º Passo: O Cálculo "Por Dentro" (ICMS)
+                    </h3>
+                    <p>Você não pode simplesmente calcular 18% (ICMS) em cima dos R$ 120,00 para somar, pois o fisco exige que a alíquota seja aplicada sobre o total final da nota. Para encontrar o valor correto usamos a fórmula:</p>
+                    
+                    <div class="bg-slate-100 p-4 rounded-lg font-mono text-sm text-center text-slate-700 my-4 border border-slate-200">
+                        Preço Final = Valor Base / (1 - (Alíquota / 100))
+                    </div>
+
+                    <p>Sendo assim, para uma alíquota de 18% (0,18), nós dividimos o Valor Base (120) por 0,82 (que é 1 - 0,18). O resultado exato (Preço de Venda Final) será <strong>R$ 146,34</strong>.</p>
+                    
+                    <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-100 text-emerald-900 shadow-inner mt-4">
+                        <p class="!mb-0 text-sm"><strong>Prova Real:</strong> Se o seu produto for vendido a R$ 146,34 na Nota Fiscal e o ICMS for de 18%, o destaque do ICMS será de R$ 26,34. Ao subtrair o imposto (R$ 146,34 - R$ 26,34), sobrará exatamente <strong>R$ 120,00</strong>, que cobrirá o custo do seu produto (R$ 100,00) garantindo intacto seu lucro de 20% (R$ 20,00).</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const valorCustoInput = document.getElementById('valorCusto');
+        const margemLucroInput = document.getElementById('margemLucro');
+        const aliquotaIcmsInput = document.getElementById('aliquotaIcms');
+
+        const valorBaseLucroOutput = document.getElementById('valorBaseLucro');
+        const valorIcmsCalculadoOutput = document.getElementById('valorIcmsCalculado');
+        const precoFinalVendaOutput = document.getElementById('precoFinalVenda');
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
+        }
+
+        function calcularFormacao() {
+            const custo = parseFloat(valorCustoInput.value) || 0;
+            const lucro = parseFloat(margemLucroInput.value) || 0;
+            const icms = parseFloat(aliquotaIcmsInput.value) || 0;
+
+            // 1. Calcula o Produto + Lucro
+            const baseComLucro = custo * (1 + (lucro / 100));
+
+            // 2. Calcula o Preço Final embutindo o ICMS (Cálculo "por dentro")
+            let precoFinal = 0;
+            let valorIcms = 0;
+
+            if (icms < 100) {
+                precoFinal = baseComLucro / (1 - (icms / 100));
+                valorIcms = precoFinal - baseComLucro;
+            }
+
+            // Atualiza os outputs na tela
+            valorBaseLucroOutput.textContent = formatCurrency(baseComLucro);
+            valorIcmsCalculadoOutput.textContent = formatCurrency(valorIcms);
+            precoFinalVendaOutput.textContent = formatCurrency(precoFinal);
+        }
+
+        // Configura ouvintes de eventos para recalcular ao vivo
+        [valorCustoInput, margemLucroInput, aliquotaIcmsInput].forEach(input => {
+            input.addEventListener('input', calcularFormacao);
+        });
+
+        // Calcula pela primeira vez no carregamento
+        document.addEventListener('DOMContentLoaded', calcularFormacao);
+    </script>
+</body>
+
+</html>
